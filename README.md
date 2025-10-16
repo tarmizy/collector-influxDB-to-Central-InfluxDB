@@ -1,6 +1,6 @@
 # Data Collector
 
-Data Collector untuk mengumpulkan metrics dari multiple InfluxDB source servers (POD-8 dan POD-30) dan mengirimkannya ke Central InfluxDB.
+Data Collector untuk mengumpulkan metrics dari multiple InfluxDB source servers (SRV-8 dan SRV-30) dan mengirimkannya ke Central InfluxDB.
 
 ## 📁 Struktur Project
 
@@ -23,11 +23,11 @@ data-collector/
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CENTRAL INFLUXDB                              │
-│                    (182.165.0.154:8086)                         │
+│                    CENTRAL INFLUXDB                             │
+│                    (100.120.0.154:8086)                         │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │ telegraf    │  │power_monitor│  │pod_monitor  │              │
+│  │ telegraf    │  │power_monitor│  │SRV_monitor  │              │
 │  │ bucket      │  │ing bucket   │  │ing bucket   │              │
 │  └─────────────┘  └─────────────┘  └─────────────┘              │
 └─────────────────────────────────────────────────────────────────┘
@@ -42,38 +42,38 @@ data-collector/
          ┌─────────────────────────────────────┐
          │       SOURCE SERVERS                │
          ├─────────────────────────────────────┤
-         │  ┌─────────────┐  ┌─────────────┐    │
-         │  │   POD-8     │  │   POD-30    │    │
-         │  │192.168.199.8│  │192.168.199.30│   │
-         │  ├─────────────┤  ├─────────────┤    │
-         │  │  telegraf   │  │power_monitor│    │
-         │  │   bucket    │  │ing bucket   │    │
-         │  │             │  │             │    │
-         │  │             │  │pod_monitor  │    │
-         │  │             │  │ing bucket   │    │
-         │  └─────────────┘  └─────────────┘    │
+         │  ┌─────────────┐  ┌─────────────┐   │
+         │  │   SRV-8     │  │   SRV-30    │   │
+         │  │ 100.20.30.8 │  │ 100.20.30.30│   │
+         │  ├─────────────┤  ├─────────────┤   │
+         │  │  telegraf   │  │power_monitor│   │
+         │  │   bucket    │  │ing bucket   │   │
+         │  │             │  │             │   │
+         │  │             │  │SRV_monitor  │   │
+         │  │             │  │ing bucket   │   │
+         │  └─────────────┘  └─────────────┘   │
          └─────────────────────────────────────┘
 ```
 
 ### 🏢 **Komponen Sistem**
 
-#### **1. Source Servers (POD-8 & POD-30)**
-- **POD-8** (`192.168.199.8:8086`): Server utama dengan Telegraf metrics
-- **POD-30** (`192.168.199.30:8086`): Server dengan power monitoring dan pod monitoring data
-- **Organisasi**: POD-8 menggunakan `default`, POD-30 menggunakan `pod`
+#### **1. Source Servers (SRV-8 & SRV-30)**
+- **SRV-8** (`100.20.30.8:8086`): Server utama dengan Telegraf metrics
+- **SRV-30** (`100.20.30.30:8086`): Server dengan power monitoring dan SRV monitoring data
+- **Organisasi**: SRV-8 menggunakan `default`, SRV-30 menggunakan `SRV`
 
 #### **2. Central InfluxDB**
-- **Lokasi**: `182.165.0.154:8086`
+- **Lokasi**: `100.120.0.154:8086`
 - **Organisasi**: `central`
 - **Buckets**: 
-  - `telegraf` - Menyimpan data sistem dari POD-8
-  - `power_monitoring` - Menyimpan data power dari POD-30
-  - `pod_monitoring` - Menyimpan data pod monitoring dari POD-30
+  - `telegraf` - Menyimpan data sistem dari SRV-8
+  - `power_monitoring` - Menyimpan data power dari SRV-30
+  - `SRV_monitoring` - Menyimpan data SRV monitoring dari SRV-30
 
 #### **3. Data Collector**
 - **Fungsi**: Mengumpulkan data dari source servers dan mengirim ke central
 - **Collection Interval**: Setiap 60 detik (configurable)
-- **Transformasi**: Standardisasi hostname (`POD-8` → `pod_8`, `POD-30` → `pod_30`)
+- **Transformasi**: Standardisasi hostname (`SRV-8` → `SRV_8`, `SRV-30` → `SRV_30`)
 
 ### 🌐 **Network Architecture**
 
@@ -85,8 +85,8 @@ Internet/External Network
 │                LOCAL NETWORK                            │
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │
-│  │   POD-8     │    │   POD-30    │    │   CENTRAL   │  │
-│  │192.168.199.8│    │192.168.199.30│    │182.165.0.154│  │
+│  │   SRV-8     │    │   SRV-30    │    │   CENTRAL   │  │
+│  │ 100.20.30.8 │    │100.20.30.30 │    │100.120.0.154│  │
 │  │ :8086       │    │ :8086       │    │ :8086       │  │
 │  └─────────────┘    └─────────────┘    └─────────────┘  │
 └─────────────────────────────────────────────────────────┘
@@ -115,18 +115,18 @@ Source Server → Data Collector → Central InfluxDB
 
 **Step 1: Query Source Servers**
 ```bash
-# Query dari POD-8 (telegraf bucket)
+# Query dari SRV-8 (telegraf bucket)
 from(bucket: "telegraf") |> range(start: -5m) |> filter(fn: (r) => r._measurement == "cpu")
 
-# Query dari POD-30 (power_monitoring bucket)  
+# Query dari SRV-30 (power_monitoring bucket)  
 from(bucket: "power_monitoring") |> range(start: -5m) |> filter(fn: (r) => r._field != "chair_section")
 ```
 
 **Step 2: Data Transformation**
 ```bash
 # Transformasi hostname
-Original: "POD-8" → Standardized: "pod_8"
-Original: "POD-30" → Standardized: "pod_30"
+Original: "SRV-8" → Standardized: "SRV_8"
+Original: "SRV-30" → Standardized: "SRV_30"
 
 # Penambahan metadata
 Tags: host, source_bucket, field
@@ -136,9 +136,9 @@ Buckets: telegraf → telegraf, power_monitoring → power_monitoring
 **Step 3: Write to Central InfluxDB**
 ```bash
 # Write ke bucket yang sesuai
-Write to: telegraf bucket (dari POD-8)
-Write to: power_monitoring bucket (dari POD-30)
-Write to: pod_monitoring bucket (dari POD-30)
+Write to: telegraf bucket (dari SRV-8)
+Write to: power_monitoring bucket (dari SRV-30)
+Write to: SRV_monitoring bucket (dari SRV-30)
 ```
 
 ### 🚀 **Deployment Architecture**
@@ -176,7 +176,7 @@ curl http://localhost:5000/health
 
 #### **Health Endpoints**
 - **Data Collector Health**: `http://localhost:5000/health`
-- **Central InfluxDB Health**: `http://182.165.0.154:8086/health`
+- **Central InfluxDB Health**: `http://100.120.0.154:8086/health`
 
 #### **Metrics Collection**
 - **Total Metrics**: Auto-tracked dalam collector logs
@@ -202,7 +202,7 @@ curl http://localhost:5000/health
 #### **Query Templates**
 - **System Metrics**: CPU, Memory, Disk, Network
 - **Power Monitoring**: Current measurements dengan filtering
-- **Pod Monitoring**: Kubernetes/container metrics
+- **SRV Monitoring**: Kubernetes/container metrics
 
 ### 🛡️ **Security Considerations**
 
@@ -287,22 +287,22 @@ python3 collector.py
 
 ```bash
 # Central InfluxDB (tujuan pengiriman data)
-INFLUXDB_CENTRAL_URL=http://182.165.0.154:8086
+INFLUXDB_CENTRAL_URL=http://100.120.0.154:8086
 INFLUXDB_CENTRAL_TOKEN=central_token_abcdef123456
 INFLUXDB_CENTRAL_ORG=central
 INFLUXDB_CENTRAL_BUCKET=metrics
 
-# Source Server A (POD-8)
-SERVER_A_URL=http://192.168.199.8:8086
+# Source Server A (SRV-8)
+SERVER_A_URL=http://100.20.30.8:8086
 SERVER_A_TOKEN=z7qh_aJzI1RIfmNvCD9djvZpE6_0QtlDzJkSXNPbfyB9s6Ftowtk3hISOYky3GI0YotmP1Clx7OgGrD7ONLabw==
 SERVER_A_ORG=default
 SERVER_A_BUCKET=telegraf
 
-# Source Server B (POD-30)
-SERVER_B_URL=http://192.168.199.30:8086
+# Source Server B (SRV-30)
+SERVER_B_URL=http://100.20.30.30:8086
 SERVER_B_TOKEN=wb9iiVQfgJDSq1o6YnbOjuTeehUOAe8-gFWXRBDeG9kVvlegMcDyU3NOIjEXVT9PcoR9ispIBe8whbXrVcGcTA==
-SERVER_B_ORG=pod
-SERVER_B_BUCKET=pod_monitoring
+SERVER_B_ORG=SRV
+SERVER_B_BUCKET=SRV_monitoring
 SERVER_B_BUCKET_2=power_monitoring
 
 # Data Collector Settings
@@ -320,16 +320,16 @@ Konfigurasi query untuk berbagai jenis metrics yang akan dikumpulkan dari source
 ### ✅ Bucket Mapping
 - Data dari `telegraf` bucket → `telegraf` bucket di central
 - Data dari `power_monitoring` bucket → `power_monitoring` bucket di central
-- Data dari `pod_monitoring` bucket → `pod_monitoring` bucket di central
+- Data dari `SRV_monitoring` bucket → `SRV_monitoring` bucket di central
 
 ### ✅ Hostname Standardization
-- `POD-8` → `pod_8`
-- `POD-30` → `pod_30`
+- `SRV-8` → `SRV_8`
+- `SRV-30` → `SRV_30`
 
 ### ✅ Host-based Filtering
 Data dapat difilter berdasarkan:
-- `host`: pod_8, pod_30
-- `source_bucket`: telegraf, power_monitoring, pod_monitoring
+- `host`: SRV_8, SRV_30
+- `source_bucket`: telegraf, power_monitoring, SRV_monitoring
 
 ### ✅ Real-time Collection
 - Mengumpulkan data setiap 60 detik (configurable)
@@ -349,17 +349,17 @@ tail -f logs/collector.log
 
 ### Cek Data di Central InfluxDB
 ```bash
-# Lihat measurements dari POD-8
-curl -s "http://182.165.0.154:8086/api/v2/query?org=central" \
+# Lihat measurements dari SRV-8
+curl -s "http://100.120.0.154:8086/api/v2/query?org=central" \
   -H "Authorization: Token central_token_abcdef123456" \
   -H "Content-Type: application/vnd.flux" \
-  -d 'from(bucket: "telegraf") |> range(start: -1h) |> filter(fn: (r) => r.host == "pod_8") |> count()'
+  -d 'from(bucket: "telegraf") |> range(start: -1h) |> filter(fn: (r) => r.host == "SRV_8") |> count()'
 
-# Lihat measurements dari POD-30
-curl -s "http://182.165.0.154:8086/api/v2/query?org=central" \
+# Lihat measurements dari SRV-30
+curl -s "http://100.120.0.154:8086/api/v2/query?org=central" \
   -H "Authorization: Token central_token_abcdef123456" \
   -H "Content-Type: application/vnd.flux" \
-  -d 'from(bucket: "power_monitoring") |> range(start: -1h) |> filter(fn: (r) => r.host == "pod_30") |> count()'
+  -d 'from(bucket: "power_monitoring") |> range(start: -1h) |> filter(fn: (r) => r.host == "SRV_30") |> count()'
 ```
 
 ## 🐛 Troubleshooting
@@ -369,7 +369,7 @@ curl -s "http://182.165.0.154:8086/api/v2/query?org=central" \
 - Solusi: Query sudah difilter untuk exclude string fields
 
 ### Error: Connection refused
-- Pastikan Central InfluxDB running di `http://182.165.0.154:8086`
+- Pastikan Central InfluxDB running di `http://100.120.0.154:8086`
 - Cek token dan organization name
 
 ### Error: No data collected
