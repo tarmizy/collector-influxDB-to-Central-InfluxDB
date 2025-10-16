@@ -1,0 +1,61 @@
+# Data Collector Docker Compose Configuration
+# Separate from Central InfluxDB - for configuration only (not running)
+version: '3.8'
+
+services:
+  # Data Collector Service
+  data-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: data-collector
+    hostname: data-collector
+    environment:
+      # Central InfluxDB Connection
+      - INFLUXDB_CENTRAL_URL=${INFLUXDB_CENTRAL_URL}
+      - INFLUXDB_CENTRAL_TOKEN=${INFLUXDB_CENTRAL_TOKEN}
+      - INFLUXDB_CENTRAL_ORG=${INFLUXDB_CENTRAL_ORG}
+      - INFLUXDB_CENTRAL_BUCKET=${INFLUXDB_CENTRAL_BUCKET}
+
+      # Source Server A (POD-8)
+      - SERVER_A_URL=${SERVER_A_URL}
+      - SERVER_A_TOKEN=${SERVER_A_TOKEN}
+      - SERVER_A_ORG=${SERVER_A_ORG}
+      - SERVER_A_BUCKET=${SERVER_A_BUCKET}
+
+      # Source Server B (POD-30)
+      - SERVER_B_URL=${SERVER_B_URL}
+      - SERVER_B_TOKEN=${SERVER_B_TOKEN}
+      - SERVER_B_ORG=${SERVER_B_ORG}
+      - SERVER_B_BUCKET=${SERVER_B_BUCKET}
+      - SERVER_B_BUCKET_2=${SERVER_B_BUCKET_2}
+
+      # Data Collector Settings
+      - COLLECTOR_INTERVAL=${COLLECTOR_INTERVAL}
+      - HEALTH_CHECK_PORT=${HEALTH_CHECK_PORT}
+      - LOG_LEVEL=${LOG_LEVEL}
+
+    volumes:
+      - ./logs:/app/logs  # Mount logs directory
+      - ./config:/app/config:ro  # Mount config directory (read-only)
+
+    # Health check for the container
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${HEALTH_CHECK_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    # Network configuration
+    networks:
+      - data-collector-network
+
+    # Restart policy
+    restart: unless-stopped
+
+# Networks
+networks:
+  data-collector-network:
+    driver: bridge
+    name: data-collector-network

@@ -1,0 +1,396 @@
+# Data Collector .gitignore
+# Exclude sensitive and generated files from version control
+
+# =============================================
+# ENVIRONMENT FILES (SENSITIVE DATA)
+# =============================================
+# Actual environment files with real credentials
+.env
+.env.local
+.env.production
+.env.development
+
+# Backup environment files
+.env.backup
+.env.old
+*.env.backup
+
+# =============================================
+# LOGS AND RUNTIME DATA
+# =============================================
+# Application logs
+logs/
+*.log
+*.log.*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# =============================================
+# PYTHON SPECIFIC
+# =============================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# =============================================
+# IDE AND EDITOR FILES
+# =============================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Atom
+.atom/
+
+# =============================================
+# OS SPECIFIC FILES
+# =============================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# =============================================
+# DOCKER
+# =============================================
+# Docker volumes and containers
+/docker-volumes/
+/docker-data/
+
+# Docker Compose
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Docker container logs (if not using volume mount)
+/container-logs/
+
+# =============================================
+# TEMPORARY AND BACKUP FILES
+# =============================================
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# Auto-generated files
+*.auto
+*.generated
+
+# =============================================
+# PROJECT SPECIFIC
+# =============================================
+# InfluxDB data (if running locally)
+influxdb_data/
+
+# Telegraf configuration backups
+*.conf.backup
+*.conf.old
+
+# Custom temporary directories
+temp/
+tmp/
+.tmp/
+
+# =============================================
+# SECURITY AND CREDENTIALS
+# =============================================
+# Any files containing secrets or credentials
+*credentials*
+*secret*
+*key
+*token
+*_token*
+*_key*
+*_secret*
+
+# AWS credentials (if using cloud services)
+.aws/
+credentials
+config
+
+# =============================================
+# DOCUMENTATION BUILD
+# =============================================
+# Sphinx
+docs/build/
+docs/source/_build/
+
+# MkDocs
+site/
+
+# Docusaurus
+.docusaurus/
+build/
+
+# =============================================
+# TESTING
+# =============================================
+# Test results
+test-results/
+tests-results/
+test_output/
+pytest.ini
+
+# Jest (if using JavaScript testing)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================
+# BUILD ARTIFACTS
+# =============================================
+# Compiled binaries
+*.exe
+*.out
+*.app
+
+# Go binaries (if using Go components)
+*.test
+
+# Rust binaries (if using Rust components)
+target/
+
+# Node.js (if using JavaScript components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================
+# MISCELLANEOUS
+# =============================================
+# Core dump files
+core
+*.core
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Network drives
+.netrwhist
+
+# File manager metadata
+.fseventsd/
+.DocumentRevisions-V100/
+.TemporaryItems/
+.VolumeIcon.icns/
+.com.apple.timemachine.donotpresent
+
+# Windows shortcuts
+*.lnk
+
+# =============================================
+# ALLOWED FILES
+# =============================================
+# Keep these files in version control
+!.gitignore
+!.env.example
+!README.md
+!LICENSE
+!requirements.txt
+!Dockerfile
+!docker-compose*.yml
+!docker-compose*.yaml
